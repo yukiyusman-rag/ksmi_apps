@@ -3,505 +3,533 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KMSI Olimpiad Level 4 - Interaktif & AI Tutor</title>
-    <!-- Vue 3 CDN -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>KMSI & JSO Level 4 Interactive Learning Hub</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- FontAwesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Vue.js 3 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        [v-cloak] { display: none !important; }
-        .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease, transform 0.3s ease; }
-        .fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(10px); }
-        .clean-scroll::-webkit-scrollbar { width: 6px; }
-        .clean-scroll::-webkit-scrollbar-track { background: transparent; }
-        .clean-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen">
-    <div id="app" v-cloak class="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
-        <div class="bg-white w-full max-w-5xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col min-h-[85vh]">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <div id="app" class="flex-1 flex flex-col" v-cloak>
+        <!-- Header Utama -->
+        <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-teal-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg shadow-md">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-slate-900 text-lg leading-tight">KMSI & JSO Level 4 Hub</h1>
+                        <p class="text-xs text-slate-500 font-medium">Platform Simulasi Olimpiade Bahasa Inggris</p>
+                    </div>
+                </div>
+                <button v-if="phase !== 'home'" @click="resetApp" class="text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-xl transition-colors flex items-center gap-2 cursor-pointer">
+                    <i class="fas fa-house"></i> Menu Utama
+                </button>
+            </div>
+        </header>
+
+        <!-- Konten Utama -->
+        <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full flex flex-col">
             
-            <!-- Header -->
-            <div class="bg-gradient-to-r from-blue-700 via-indigo-700 to-indigo-900 text-white p-6 md:p-8 text-center relative shrink-0">
-                <h1 class="text-2xl md:text-3xl font-extrabold relative z-10 tracking-tight">
-                    <i class="fas fa-medal text-yellow-400 mr-2"></i> KMSI Olimpiad Level 4
-                </h1>
-                <p class="text-indigo-100 text-sm md:text-base mt-2 font-medium relative z-10">Latihan Terpandu, Simulasi Berwaktu & Evaluasi Mandiri</p>
+            <!-- FASE 1: MENU UTAMA -->
+            <div v-if="phase === 'home'" class="flex-1 flex flex-col justify-center items-center text-center max-w-2xl mx-auto py-6">
+                <div class="w-20 h-20 bg-teal-50 text-teal-600 rounded-3xl flex items-center justify-center text-4xl mx-auto shadow-sm mb-6 border border-teal-100">
+                    <i class="fas fa-book-open-reader"></i>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-3">Modul Kompetisi Level 4</h2>
+                <p class="text-slate-600 mb-8 text-sm sm:text-base leading-relaxed">
+                    Selesaikan <strong class="text-teal-600">Mode 1 (Latihan Instan)</strong> terlebih dahulu. Sistem Kunci Cerdas (Smart Lock) akan membuka <strong class="text-amber-600">Mode 2 (Simulasi Berwaktu)</strong> secara otomatis setelah latihan selesai.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full text-left">
+                    <!-- Kartu Mode 1 -->
+                    <div @click="startMode1" class="bg-white border-2 border-slate-200 hover:border-teal-500 p-6 rounded-2xl cursor-pointer transition-all shadow-sm hover:shadow-md group">
+                        <div class="text-teal-600 text-3xl mb-3 group-hover:scale-110 transition-transform origin-left"><i class="fas fa-bolt"></i></div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-1">Mode 1: Latihan Instan</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed">Paket 2024 Tipe A & B (New Zealand & Data Siswa). Umpan balik langsung & AI Tutor.</p>
+                    </div>
+
+                    <!-- Kartu Mode 2 (Terkunci) -->
+                    <div @click="mode2Unlocked ? startMode2Intro() : null" 
+                         :class="[
+                            'p-6 rounded-2xl border-2 transition-all shadow-sm',
+                            mode2Unlocked ? 'bg-white border-amber-300 hover:border-amber-500 cursor-pointer group hover:shadow-md' : 'bg-slate-100 border-slate-200 opacity-70 cursor-not-allowed'
+                         ]">
+                        <div class="flex justify-between items-start mb-3">
+                            <div :class="[mode2Unlocked ? 'text-amber-600' : 'text-slate-400', 'text-3xl transition-transform origin-left group-hover:scale-110']">
+                                <i class="fas fa-stopwatch"></i>
+                            </div>
+                            <span :class="[mode2Unlocked ? 'bg-amber-100 text-amber-700' : 'bg-slate-200 text-slate-500', 'text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5']">
+                                <i :class="mode2Unlocked ? 'fas fa-unlock' : 'fas fa-lock'"></i> {{ mode2Unlocked ? 'Terbuka' : 'Terkunci' }}
+                            </span>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-1">Mode 2: Simulasi Evaluasi</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed">Paket 2025 Tipe B & D (Walt Disney & KEFLEX). Dikerjakan dengan Timer & Evaluasi Akhir.</p>
+                    </div>
+                </div>
             </div>
 
-            <div class="p-6 md:p-8 flex-1 flex flex-col">
-                <transition name="fade" mode="out-in">
-                    
-                    <!-- MENU UTAMA -->
-                    <div v-if="phase === 'home'" key="home" class="flex-1 flex flex-col justify-center items-center text-center py-4">
-                        <div class="max-w-2xl w-full">
-                            <div class="w-24 h-24 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-5xl mx-auto shadow-inner mb-6">
-                                <i class="fas fa-graduation-cap"></i>
-                            </div>
-                            <h2 class="text-2xl font-bold text-slate-900 mb-3">Persiapan Olimpiade</h2>
-                            <p class="text-slate-600 mb-8 text-sm leading-relaxed">
-                                Selesaikan <strong class="text-blue-600">Mode 1: Latihan Instan</strong> terlebih dahulu untuk membuka akses ke <strong class="text-amber-600">Mode 2: Simulasi Berwaktu</strong>.
-                            </p>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-left">
-                                <div @click="startMode1" class="bg-sky-50 border-2 border-sky-200 hover:border-sky-400 p-6 rounded-2xl cursor-pointer transition-all shadow-sm group">
-                                    <div class="text-sky-600 text-3xl mb-3"><i class="fas fa-bolt"></i></div>
-                                    <h3 class="font-bold text-slate-800 text-lg mb-1">Mode 1: Latihan</h3>
-                                    <p class="text-xs text-slate-600 leading-relaxed">Validasi jawaban instan per soal. Didampingi AI Tutor.</p>
-                                </div>
+            <!-- FASE 2: MODE 1 (LATIHAN) -->
+            <div v-else-if="phase === 'mode1'" class="space-y-6 flex-1 flex flex-col">
+                <div class="flex justify-between items-center bg-white px-6 py-4 rounded-2xl border border-slate-200 shadow-xs">
+                    <span class="text-xs font-extrabold text-teal-600 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fas fa-bolt"></i> Mode Latihan Terpandu
+                    </span>
+                    <div class="flex items-center gap-3">
+                        <button @click="openAITutor" class="text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-xl transition-colors flex items-center gap-2 cursor-pointer border border-indigo-100 shadow-2xs">
+                            <i class="fas fa-robot"></i> Tanya AI Tutor
+                        </button>
+                        <span class="text-xs font-bold text-slate-600 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
+                            Soal {{ currentMode1Index + 1 }} dari {{ mode1Questions.length }}
+                        </span>
+                    </div>
+                </div>
 
-                                <div @click="mode2Unlocked ? startMode2Intro() : null" 
-                                     :class="['p-6 rounded-2xl border-2 transition-all shadow-sm', mode2Unlocked ? 'bg-amber-50 border-amber-200 hover:border-amber-400 cursor-pointer' : 'bg-slate-50 border-slate-200 opacity-60 cursor-not-allowed']">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <div :class="mode2Unlocked ? 'text-amber-600 text-3xl' : 'text-slate-400 text-3xl'"><i class="fas fa-stopwatch"></i></div>
-                                        <i v-if="!mode2Unlocked" class="fas fa-lock text-slate-400 text-xl bg-slate-200 p-2 rounded-full"></i>
-                                    </div>
-                                    <h3 class="font-bold text-slate-800 text-lg mb-1">Mode 2: Simulasi</h3>
-                                    <p class="text-xs text-slate-600 leading-relaxed">Dikerjakan dengan Timer. Evaluasi dan perbaikan di akhir.</p>
-                                </div>
-                            </div>
-                        </div>
+                <div class="bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-xs flex-1 flex flex-col">
+                    <!-- Teks Rujukan Asli / Visual -->
+                    <div v-if="currentMode1Q.context" class="mb-6 p-5 bg-slate-50 rounded-2xl border border-slate-200">
+                        <h4 class="font-bold text-slate-900 text-base mb-2">{{ currentMode1Q.contextTitle }}</h4>
+                        <p class="text-xs sm:text-sm text-slate-700 whitespace-pre-line leading-relaxed font-serif">{{ currentMode1Q.contextBody }}</p>
                     </div>
 
-                    <!-- MODE 1 LATIHAN -->
-                    <div v-else-if="phase === 'mode1'" key="mode1" class="space-y-6 flex-1 flex flex-col">
-                        <div class="flex flex-wrap justify-between items-center bg-slate-50 px-5 py-4 rounded-xl border border-slate-200 gap-4">
-                            <span class="text-xs sm:text-sm font-extrabold text-blue-600 uppercase tracking-widest flex items-center gap-2">
-                                <i class="fas fa-bolt"></i> Latihan Terpandu
+                    <h3 class="text-base sm:text-lg font-bold text-slate-900 mb-6 leading-snug">
+                        <span class="text-teal-600 mr-2">{{ currentMode1Index + 1 }}.</span> {{ currentMode1Q.prompt }}
+                    </h3>
+
+                    <div class="space-y-3 mb-6">
+                        <label v-for="(opt, idx) in currentMode1Q.options" :key="idx" 
+                               :class="[
+                                    'flex items-center p-4 rounded-xl border-2 transition-all cursor-pointer',
+                                    answersMode1[currentMode1Index] === idx ? (mode1Checked ? (idx === currentMode1Q.answer ? 'bg-emerald-50 border-emerald-500 text-emerald-900 font-semibold' : 'bg-rose-50 border-rose-500 text-rose-900 font-semibold') : 'bg-teal-50 border-teal-500 text-teal-900 font-semibold') : 'border-slate-200 hover:border-slate-300 bg-white'
+                               ]">
+                            <input type="radio" :name="'m1_q' + currentMode1Index" :value="idx" v-model="answersMode1[currentMode1Index]" :disabled="mode1Checked" class="hidden">
+                            <span class="w-7 h-7 rounded-lg border border-slate-300 flex items-center justify-center mr-3 text-xs font-bold bg-white shrink-0">
+                                {{ String.fromCharCode(65 + idx) }}
                             </span>
-                            <div class="flex items-center gap-3">
-                                <button @click="openAITutor" class="text-xs font-bold text-indigo-700 bg-indigo-100 hover:bg-indigo-200 px-4 py-2 rounded-lg transition-colors flex items-center gap-2 cursor-pointer shadow-sm border border-indigo-200">
-                                    <i class="fas fa-robot text-sm"></i> Tanya AI Tutor
-                                </button>
-                                <span class="text-sm font-bold text-slate-600 bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm">
-                                    Soal {{ currentMode1Index + 1 }} / {{ mode1Questions.length }}
+                            <span class="text-sm">{{ opt }}</span>
+                        </label>
+                    </div>
+
+                    <div v-if="mode1Checked" class="mb-6 p-4 rounded-2xl" :class="answersMode1[currentMode1Index] === currentMode1Q.answer ? 'bg-emerald-50 border border-emerald-200 text-emerald-800' : 'bg-rose-50 border border-rose-200 text-rose-800'">
+                        <p class="text-xs font-bold uppercase mb-1">{{ answersMode1[currentMode1Index] === currentMode1Q.answer ? '✔ Benar!' : '✖ Kurang Tepat' }}</p>
+                        <p class="text-xs leading-relaxed">{{ currentMode1Q.rationale }}</p>
+                    </div>
+
+                    <div class="mt-auto flex justify-end gap-3 pt-4 border-t border-slate-100">
+                        <button v-if="!mode1Checked" @click="checkMode1" :disabled="answersMode1[currentMode1Index] === undefined" class="bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-bold py-3 px-8 rounded-xl text-xs transition-colors cursor-pointer shadow-sm">
+                            Periksa Jawaban
+                        </button>
+                        <button v-else @click="nextMode1" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-xl text-xs transition-colors cursor-pointer shadow-sm">
+                            {{ currentMode1Index < mode1Questions.length - 1 ? 'Soal Berikutnya' : 'Selesaikan Latihan' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FASE 3: INTRO MODE SIMULASI -->
+            <div v-else-if="phase === 'mode2_intro'" class="flex-1 flex flex-col justify-center items-center text-center max-w-lg mx-auto py-8">
+                <div class="bg-amber-50 text-amber-600 w-24 h-24 rounded-3xl flex items-center justify-center text-4xl mb-6 border border-amber-200 shadow-sm">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-3">Siap Memulai Simulasi?</h2>
+                <p class="text-slate-600 mb-8 text-sm leading-relaxed">
+                    Mode Simulasi dilengkapi dengan <b class="text-amber-600">Timer Hitung Mundur (2 Menit)</b>. AI Tutor dinonaktifkan agar kamu dapat menguji kemampuan secara mandiri.
+                </p>
+                <button @click="startMode2" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3.5 px-10 rounded-2xl transition-all shadow-md cursor-pointer text-sm flex items-center gap-2">
+                    Mulai Simulasi <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- FASE 4: MODE SIMULASI (BERWAKTU) -->
+            <div v-else-if="phase === 'mode2'" class="space-y-6 flex-1 flex flex-col">
+                <div class="flex justify-between items-center bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-md">
+                    <span class="text-xs font-extrabold uppercase tracking-wider flex items-center gap-2 text-amber-400">
+                        <i class="fas fa-stopwatch"></i> Simulasi Ujian Aktif
+                    </span>
+                    <span class="text-lg font-mono font-black px-4 py-1 rounded-xl bg-slate-800 border border-slate-700 text-amber-300">
+                        {{ formattedTimer }}
+                    </span>
+                </div>
+
+                <div class="bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-xs space-y-6">
+                    <div v-for="(q, qIndex) in mode2Questions" :key="q.id" class="border-b border-slate-100 pb-6 last:border-none last:pb-0">
+                        <!-- Teks / Label KEFLEX Asli -->
+                        <div v-if="q.context" class="mb-4 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                            <h4 class="font-bold text-slate-900 text-sm mb-1">{{ q.contextTitle }}</h4>
+                            <p class="text-xs text-slate-700 whitespace-pre-line font-serif">{{ q.contextBody }}</p>
+                        </div>
+
+                        <p class="font-bold text-slate-900 text-sm sm:text-base mb-4">
+                            <span class="text-amber-600 mr-2">{{ qIndex + 1 }}.</span> {{ q.prompt }}
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <label v-for="(opt, oIdx) in q.options" :key="oIdx" 
+                                   :class="[
+                                        'flex items-center p-3.5 rounded-xl border-2 transition-all cursor-pointer text-xs sm:text-sm',
+                                        answersMode2[qIndex] === oIdx ? 'bg-amber-50 border-amber-500 font-semibold text-amber-900' : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
+                                   ]">
+                                <input type="radio" :name="'m2_q' + qIndex" :value="oIdx" v-model="answersMode2[qIndex]" class="hidden">
+                                <span class="w-6 h-6 rounded-md border border-slate-300 flex items-center justify-center mr-2.5 text-xs font-bold bg-white shrink-0">
+                                    {{ String.fromCharCode(65 + oIdx) }}
                                 </span>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-white border-2 border-slate-200 p-5 sm:p-8 rounded-2xl shadow-sm">
-                            <div v-if="currentQ.context" class="bg-slate-50 p-5 rounded-xl border border-slate-200 mb-6">
-                                <p class="text-sm text-slate-700 whitespace-pre-line leading-relaxed font-serif text-justify">{{ currentQ.context }}</p>
-                            </div>
-
-                            <h3 class="text-lg sm:text-xl font-bold text-slate-900 leading-snug mb-5">
-                                <span class="text-blue-600 mr-1">{{ currentQ.originalNumber }}.</span> {{ currentQ.text }}
-                            </h3>
-
-                            <div class="space-y-3">
-                                <button v-for="(opt, idx) in currentQ.options" :key="idx" 
-                                    @click="!mode1Checked ? mode1Answers[currentQ.id] = idx : null"
-                                    :disabled="mode1Checked"
-                                    :class="[
-                                        'w-full text-left p-4 rounded-xl border-2 transition-all flex items-start gap-4 cursor-pointer',
-                                        !mode1Checked && mode1Answers[currentQ.id] === idx ? 'border-sky-500 bg-sky-50 text-sky-900 font-bold' : '',
-                                        !mode1Checked && mode1Answers[currentQ.id] !== idx ? 'border-slate-200 hover:border-sky-300 text-slate-700 bg-white' : '',
-                                        mode1Checked && idx === currentQ.correct ? 'border-emerald-500 bg-emerald-50 text-emerald-900 font-bold' : '',
-                                        mode1Checked && mode1Answers[currentQ.id] === idx && idx !== currentQ.correct ? 'border-rose-500 bg-rose-50 text-rose-900 line-through' : '',
-                                        mode1Checked && mode1Answers[currentQ.id] !== idx && idx !== currentQ.correct ? 'opacity-40 border-slate-200 bg-slate-50' : ''
-                                    ]">
-                                    <span class="w-6 h-6 flex-shrink-0 flex items-center justify-center rounded-full text-xs font-bold border-2 mt-0.5"
-                                        :class="mode1Checked && idx === currentQ.correct ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 text-slate-500'">
-                                        {{ String.fromCharCode(97 + idx) }}.
-                                    </span>
-                                    <span class="pt-0.5 leading-tight">{{ opt }}</span>
-                                </button>
-                            </div>
-
-                            <div v-if="mode1Checked" class="mt-6 p-5 rounded-2xl border animate-fade-in" 
-                                :class="mode1Answers[currentQ.id] === currentQ.correct ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900'">
-                                <div class="flex items-center gap-2 font-bold mb-3 text-base">
-                                    <i :class="mode1Answers[currentQ.id] === currentQ.correct ? 'fas fa-check-circle text-emerald-500 text-2xl' : 'fas fa-times-circle text-rose-500 text-2xl'"></i>
-                                    {{ mode1Answers[currentQ.id] === currentQ.correct ? 'Jawaban Benar!' : 'Jawaban Kurang Tepat' }}
-                                </div>
-                                <div class="bg-white p-4 rounded-xl border shadow-sm text-sm text-slate-700 leading-relaxed">
-                                    <strong class="text-slate-900 block mb-1">Pembahasan:</strong>
-                                    {{ currentQ.theory }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end pt-2">
-                            <button v-if="!mode1Checked" @click="checkMode1" :disabled="mode1Answers[currentQ.id] === undefined" 
-                                class="bg-blue-600 disabled:bg-slate-300 text-white font-bold py-3.5 px-8 rounded-xl shadow-md hover:bg-blue-700 cursor-pointer">
-                                Periksa Jawaban
-                            </button>
-                            <button v-if="mode1Checked" @click="nextMode1" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-8 rounded-xl shadow-md flex items-center gap-3 cursor-pointer">
-                                {{ currentMode1Index < mode1Questions.length - 1 ? 'Soal Berikutnya' : 'Selesaikan Latihan' }} <i class="fas fa-arrow-right"></i>
-                            </button>
+                                <span>{{ opt }}</span>
+                            </label>
                         </div>
                     </div>
 
-                    <!-- MODE 2 INTRO -->
-                    <div v-else-if="phase === 'mode2_intro'" key="mode2_intro" class="flex-1 flex flex-col justify-center text-center py-8">
-                        <div class="bg-amber-100 w-28 h-28 mx-auto rounded-full flex items-center justify-center mb-6 text-amber-500 text-5xl shadow-inner border border-amber-200">
-                            <i class="fas fa-stopwatch"></i>
-                        </div>
-                        <h2 class="text-3xl font-extrabold text-slate-900 mb-4">Mode Simulasi Ujian</h2>
-                        <p class="text-slate-600 mb-8 max-w-lg mx-auto text-sm sm:text-base leading-relaxed">
-                            Kerjakan soal dengan batas waktu <b>2 Menit</b>. AI Tutor dinonaktifkan agar Anda fokus mandiri.
-                        </p>
-                        <button @click="startMode2" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 px-12 rounded-full shadow-lg flex items-center justify-center mx-auto gap-3 cursor-pointer text-lg">
-                            Mulai Simulasi <i class="fas fa-play"></i>
+                    <div class="pt-4 flex justify-end">
+                        <button @click="submitMode2" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3.5 px-10 rounded-xl text-xs transition-colors cursor-pointer shadow-sm">
+                            Selesai & Kumpulkan
                         </button>
                     </div>
+                </div>
+            </div>
 
-                    <!-- MODE 2 SIMULASI -->
-                    <div v-else-if="phase === 'mode2'" key="mode2" class="space-y-8 flex-1 flex flex-col">
-                        <div class="flex justify-between items-center bg-slate-900 text-white px-5 py-4 rounded-2xl shadow-xl sticky top-4 z-10 border border-slate-700">
-                            <span class="text-xs sm:text-sm font-extrabold uppercase tracking-widest flex items-center gap-2">
-                                <i class="fas fa-flag-checkered text-amber-400"></i> Simulasi Berwaktu
-                            </span>
-                            <span class="text-xl font-mono font-black px-4 py-1.5 rounded-lg bg-slate-800 border border-slate-600 text-emerald-400">
-                                <i class="far fa-clock mr-1"></i> {{ formattedTimer }}
-                            </span>
-                        </div>
-
-                        <div v-for="q in mode2Questions" :key="q.id" class="bg-white p-6 sm:p-8 rounded-3xl border-2 border-slate-200 shadow-sm space-y-5">
-                            <div class="flex gap-3 items-start">
-                                <span class="text-xl font-black text-amber-500 mt-1">{{ q.originalNumber }}.</span>
-                                <h3 class="text-lg font-bold text-slate-900 leading-relaxed">{{ q.text }}</h3>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 gap-3 sm:pl-9">
-                                <button v-for="(opt, idx) in q.options" :key="idx" 
-                                    @click="mode2Answers[q.id] = idx"
-                                    :class="[
-                                        'w-full text-left p-4 rounded-xl border-2 transition-all text-sm flex items-start gap-4 cursor-pointer',
-                                        mode2Answers[q.id] === idx ? 'border-sky-500 bg-sky-50 text-sky-900 font-bold shadow-md' : 'border-slate-200 hover:border-sky-200 text-slate-700 bg-white'
-                                    ]">
-                                    <span class="w-6 h-6 flex-shrink-0 flex items-center justify-center rounded-full text-xs font-bold border-2 mt-0.5"
-                                        :class="mode2Answers[q.id] === idx ? 'border-sky-500 bg-sky-500 text-white' : 'border-slate-300 text-slate-500'">
-                                        {{ String.fromCharCode(97 + idx) }}.
-                                    </span>
-                                    <span class="pt-0.5 leading-tight">{{ opt }}</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-center pt-6 pb-4">
-                            <button @click="submitMode2" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-12 rounded-full shadow-xl cursor-pointer text-lg">
-                                Kumpulkan Jawaban <i class="fas fa-paper-plane"></i>
-                            </button>
+            <!-- FASE 5: EVALUASI HASIL -->
+            <div v-else-if="phase === 'evaluation'" class="space-y-6 flex-1 flex flex-col">
+                <div class="bg-white border border-slate-200 p-8 rounded-3xl text-center shadow-xs">
+                    <div class="w-16 h-16 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 border border-teal-100">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Hasil Evaluasi Simulasi</h2>
+                    <p class="text-slate-600 text-sm mb-6">Skor Akhir Anda: <strong class="text-teal-600 text-xl">{{ score }} / 100</strong></p>
+                    
+                    <div class="space-y-4 text-left max-w-2xl mx-auto mb-8">
+                        <div v-for="(item, idx) in mode2Evaluation" :key="idx" :class="['p-4 rounded-2xl border', item.isCorrect ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200']">
+                            <p class="font-bold text-xs mb-1" :class="item.isCorrect ? 'text-emerald-800' : 'text-rose-800'">
+                                Soal {{ idx + 1 }}: {{ item.isCorrect ? '✔ Benar' : '✖ Salah' }}
+                            </p>
+                            <p class="text-xs text-slate-700 mb-2 font-medium">{{ item.prompt }}</p>
+                            <p class="text-xs text-slate-600 leading-relaxed bg-white/60 p-3 rounded-xl border border-slate-200/50">
+                                <strong>Teori & Pembahasan:</strong> {{ item.rationale }}
+                            </p>
                         </div>
                     </div>
 
-                    <!-- FASE EVALUASI -->
-                    <div v-else-if="phase === 'eval'" key="eval" class="space-y-6">
-                        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 bg-gradient-to-br from-rose-50 to-orange-50 p-6 sm:p-8 rounded-3xl border border-rose-100 text-center sm:text-left">
-                            <div class="w-16 h-16 bg-white border-4 border-rose-200 text-rose-500 rounded-full flex items-center justify-center text-3xl shrink-0 shadow-sm mx-auto sm:mx-0">
-                                <i class="fas fa-clipboard-check"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-extrabold text-slate-900 text-2xl mb-2">Evaluasi Hasil Simulasi</h3>
-                                <p class="text-slate-700 text-sm sm:text-base leading-relaxed">
-                                    Ada <strong class="text-rose-600 text-lg mx-1">{{ wrongMode2Qs.length }} soal</strong> yang masih keliru. Pelajari teorinya di bawah ini.
-                                </p>
-                            </div>
-                        </div>
+                    <button @click="proceedToRetry" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3.5 px-10 rounded-xl text-xs transition-colors cursor-pointer shadow-sm">
+                        {{ wrongMode2Qs.length > 0 ? 'Lanjut ke Fase Perbaikan (Retry)' : 'Selesai & Kembali ke Menu' }}
+                    </button>
+                </div>
+            </div>
 
-                        <div class="space-y-5">
-                            <div v-for="q in wrongMode2Qs" :key="q.id" class="bg-white border-2 border-slate-200 p-6 rounded-3xl shadow-sm relative overflow-hidden">
-                                <div class="absolute top-0 left-0 w-2 h-full bg-rose-400"></div>
-                                <h4 class="font-bold text-slate-900 text-base mb-3 flex items-start gap-3">
-                                    <span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs shrink-0 border">Soal {{ q.originalNumber }}</span>
-                                    <span>{{ q.text }}</span>
-                                </h4>
-                                <div class="text-sm text-rose-800 bg-rose-50 p-4 rounded-xl mb-4 border border-rose-100">
-                                    <strong class="block mb-1 text-rose-900"><i class="fas fa-times-circle mr-1"></i> Jawaban Anda:</strong> 
-                                    <span class="line-through">{{ mode2Answers[q.id] !== undefined ? q.options[mode2Answers[q.id]] : 'Kosong' }}</span>
-                                </div>
-                                <div class="text-sm text-slate-700 bg-slate-50 p-4 rounded-xl border">
-                                    <strong class="text-indigo-700 text-base mb-2 block"><i class="fas fa-book-open mr-1"></i> Teori & Pembahasan:</strong>
-                                    <span>{{ q.theory }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end mt-5">
-                            <button @click="startRetry" class="bg-indigo-600 text-white font-bold py-3.5 px-8 rounded-xl shadow-md hover:bg-indigo-700 cursor-pointer flex items-center gap-2">
-                                Lanjut ke Fase Perbaikan (Retry) <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
+            <!-- FASE 6: PERBAIKAN (RETRY) -->
+            <div v-else-if="phase === 'retry'" class="space-y-6 flex-1 flex flex-col">
+                <div class="flex justify-between items-center bg-indigo-50 px-6 py-4 rounded-2xl border border-indigo-200">
+                    <span class="text-xs font-extrabold text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fas fa-wrench"></i> Fase Perbaikan Mandiri (Retry)
+                    </span>
+                    <div class="flex items-center gap-3">
+                        <button @click="openAITutor" class="text-xs font-bold text-indigo-600 bg-white hover:bg-indigo-50 px-4 py-2 rounded-xl transition-colors flex items-center gap-2 cursor-pointer border border-indigo-200 shadow-2xs">
+                            <i class="fas fa-robot"></i> Tanya AI Hint
+                        </button>
+                        <span class="text-xs font-bold text-indigo-700 bg-indigo-100 px-4 py-2 rounded-xl">
+                            Perbaikan {{ retryIndex + 1 }} dari {{ wrongMode2Qs.length }}
+                        </span>
                     </div>
+                </div>
 
-                    <!-- FASE PERBAIKAN (RETRY) -->
-                    <div v-else-if="phase === 'retry'" key="retry" class="space-y-6 flex-1 flex flex-col">
-                        <div class="flex flex-wrap items-center justify-between bg-indigo-50 px-5 py-4 rounded-2xl border border-indigo-100 gap-4">
-                            <div class="flex items-center text-indigo-800 font-extrabold gap-2 text-sm">
-                                <i class="fas fa-wrench text-xl"></i> Fase Perbaikan Mandiri
-                            </div>
-                            <span class="text-xs font-bold bg-white px-4 py-2 rounded-lg text-indigo-600 shadow-sm border">
-                                Memperbaiki Soal {{ retryIndex + 1 }} dari {{ wrongMode2Qs.length }}
+                <div class="bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-xs flex-1 flex flex-col">
+                    <h3 class="text-base sm:text-lg font-bold text-slate-900 mb-4 leading-snug">
+                        <span class="text-indigo-600 mr-2">Retry.</span> {{ retryQ.prompt }}
+                    </h3>
+
+                    <div class="space-y-3 mb-6">
+                        <label v-for="(opt, oIdx) in retryQ.options" :key="oIdx" 
+                               :class="[
+                                    'flex items-center p-4 rounded-xl border-2 transition-all cursor-pointer',
+                                    selectedRetryOpt === oIdx ? (retryStatus === 'correct' ? 'bg-emerald-50 border-emerald-500 text-emerald-900 font-semibold' : 'bg-rose-50 border-rose-500 text-rose-900 font-semibold') : 'border-slate-200 hover:border-slate-300 bg-white'
+                               ]">
+                            <input type="radio" name="retry_opt" :value="oIdx" v-model="selectedRetryOpt" :disabled="retryStatus === 'correct'" class="hidden">
+                            <span class="w-7 h-7 rounded-lg border border-slate-300 flex items-center justify-center mr-3 text-xs font-bold bg-white shrink-0">
+                                {{ String.fromCharCode(65 + oIdx) }}
                             </span>
-                        </div>
-
-                        <div class="bg-white border-2 border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
-                            <h3 class="text-base sm:text-lg font-bold text-slate-900 leading-relaxed mb-6">
-                                <span class="text-rose-500 mr-1">{{ retryQ.originalNumber }}.</span> {{ retryQ.text }}
-                            </h3>
-                            
-                            <div class="space-y-3 mb-6">
-                                <button v-for="(opt, idx) in retryQ.options" :key="idx" 
-                                    @click="checkRetryAnswer(idx)"
-                                    :disabled="retryStatus && retryStatus.isCorrect"
-                                    :class="[
-                                        'w-full text-left p-4 rounded-2xl border-2 transition-all flex items-start gap-4 relative overflow-hidden',
-                                        retryStatus && retryStatus.selected === idx && retryStatus.isCorrect ? 'border-emerald-500 bg-emerald-50 text-emerald-900 font-bold' : '',
-                                        retryStatus && retryStatus.selected === idx && !retryStatus.isCorrect ? 'border-rose-500 bg-rose-50 text-rose-900' : '',
-                                        !retryStatus || retryStatus.selected !== idx ? 'border-slate-200 hover:border-indigo-200 bg-white text-slate-700 cursor-pointer' : ''
-                                    ]">
-                                    <span class="w-6 h-6 flex-shrink-0 flex items-center justify-center rounded-full text-xs font-bold border-2 mt-0.5"
-                                        :class="retryStatus && retryStatus.selected === idx && retryStatus.isCorrect ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300 text-slate-500'">
-                                        {{ String.fromCharCode(97 + idx) }}.
-                                    </span>
-                                    <span class="pt-0.5 leading-tight">{{ opt }}</span>
-                                </button>
-                            </div>
-
-                            <div v-if="retryStatus" class="p-5 rounded-2xl border shadow-sm" 
-                                :class="retryStatus.isCorrect ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900'">
-                                <div class="flex items-start gap-3">
-                                    <i :class="retryStatus.isCorrect ? 'fas fa-star text-emerald-500 text-2xl' : 'fas fa-exclamation-triangle text-rose-500 text-2xl'"></i>
-                                    <div>
-                                        <p class="font-extrabold text-base">{{ retryStatus.isCorrect ? 'Benar Sekali!' : 'Masih kurang tepat, coba analisa lagi.' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end pt-4" v-if="retryStatus && retryStatus.isCorrect">
-                            <button @click="nextRetry" class="bg-indigo-600 text-white font-bold py-4 px-10 rounded-xl shadow-lg cursor-pointer flex items-center gap-2">
-                                {{ retryIndex === wrongMode2Qs.length - 1 ? 'Selesaikan Misi' : 'Soal Berikut' }} <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
+                            <span class="text-sm">{{ opt }}</span>
+                        </label>
                     </div>
 
-                    <!-- SELESAI -->
-                    <div v-else-if="phase === 'finish'" key="finish" class="flex-1 flex flex-col justify-center items-center text-center py-10 space-y-6">
-                        <div class="w-32 h-32 mx-auto bg-yellow-50 rounded-full flex items-center justify-center text-6xl border-4 border-yellow-200 shadow-xl relative">
-                            🏆
-                            <div class="absolute -bottom-3 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-xl">100% Correct</div>
-                        </div>
-                        <h2 class="text-3xl font-extrabold text-slate-900">Misi Selesai Sempurna!</h2>
-                        <p class="text-slate-600 max-w-lg mx-auto text-sm sm:text-base leading-relaxed">
-                            Luar biasa! Anda telah menyelesaikan latihan, simulasi, dan perbaikan mandiri dengan tuntas.
-                        </p>
-                        <button @click="resetApp" class="bg-slate-900 text-white font-bold py-4 px-8 rounded-xl shadow-lg cursor-pointer text-lg">
-                            <i class="fas fa-redo-alt mr-2"></i> Kembali ke Menu Utama
+                    <div v-if="retryStatus === 'wrong'" class="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs leading-relaxed">
+                        <strong>Hint AI Tutor:</strong> Jawaban masih belum tepat. Perhatikan kembali struktur kalimat atau data pada soal. Coba pilih opsi lain!
+                    </div>
+                    <div v-else-if="retryStatus === 'correct'" class="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs leading-relaxed">
+                        <strong>Luar biasa!</strong> Jawaban kamu sudah benar. Konsep telah dikuasai dengan baik.
+                    </div>
+
+                    <div class="mt-auto flex justify-end gap-3 pt-4 border-t border-slate-100">
+                        <button v-if="retryStatus !== 'correct'" @click="submitRetry" :disabled="selectedRetryOpt === null" class="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold py-3 px-8 rounded-xl text-xs transition-colors cursor-pointer shadow-sm">
+                            Periksa Ulang
+                        </button>
+                        <button v-else @click="nextRetry" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl text-xs transition-colors cursor-pointer shadow-sm">
+                            Lanjut Soal Berikutnya
                         </button>
                     </div>
-                </transition>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- POP-UP AI TUTOR PENDAMPING -->
+        <div v-if="showAITutor" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+            <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden max-h-[85vh]">
+                <div class="bg-indigo-600 text-white px-6 py-4 flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center"><i class="fas fa-robot text-sm"></i></div>
+                        <div>
+                            <h3 class="font-bold text-sm">AI Tutor Olimpiade</h3>
+                            <p class="text-[10px] text-indigo-200">Pendamping Belajar Level 4</p>
+                        </div>
+                    </div>
+                    <button @click="showAITutor = false" class="text-white/80 hover:text-white cursor-pointer"><i class="fas fa-xmark text-lg"></i></button>
+                </div>
+
+                <div id="chat-container" class="p-6 overflow-y-auto space-y-4 flex-1 bg-slate-50 text-xs">
+                    <div v-for="(msg, mIdx) in chatMessages" :key="mIdx" :class="['flex', msg.role === 'user' ? 'justify-end' : 'justify-start']">
+                        <div :class="['max-w-[80%] p-3.5 rounded-2xl leading-relaxed shadow-2xs', msg.role === 'user' ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white border border-slate-200 text-slate-700 rounded-tl-none']">
+                            {{ msg.text }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-white border-t border-slate-200 flex gap-2">
+                    <input type="text" v-model="chatInput" @keyup.enter="sendChatMessage" placeholder="Tanyakan kesulitan materi atau soal..." class="flex-1 bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-hidden focus:border-indigo-500">
+                    <button @click="sendChatMessage" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-sm">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL AI TUTOR -->
-    <div id="ai-modal-root" v-cloak>
-        <transition name="fade-pop">
-            <div v-if="showAITutor" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm">
-                <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl flex flex-col h-[85vh] sm:h-[500px] overflow-hidden border border-slate-300 relative">
-                    <div class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-4 flex justify-between items-center shrink-0">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-lg">🤖</div>
-                            <div>
-                                <h3 class="font-bold text-sm">AI Tutor Olimpiade</h3>
-                                <p class="text-[10px] text-indigo-100 opacity-90">Asisten Belajar Pendamping</p>
-                            </div>
-                        </div>
-                        <button @click="closeAITutor" class="text-white hover:bg-white/20 w-8 h-8 rounded-full font-bold cursor-pointer text-xl">&times;</button>
-                    </div>
-                    
-                    <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 clean-scroll" id="chat-container">
-                        <div v-for="(msg, index) in chatMessages" :key="index" :class="['flex w-full', msg.role === 'user' ? 'justify-end' : 'justify-start']">
-                            <div :class="['max-w-[85%] p-3.5 text-sm leading-relaxed shadow-sm', msg.role === 'user' ? 'bg-indigo-600 text-white rounded-2xl rounded-tr-sm' : 'bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-tl-sm']">
-                                <span v-html="formatMessage(msg.text)"></span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="p-3 bg-white border-t shrink-0">
-                        <form @submit.prevent="sendMessage" class="flex gap-2">
-                            <input type="text" v-model="chatInput" placeholder="Tanyakan petunjuk..." class="flex-1 bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none">
-                            <button type="submit" :disabled="!chatInput.trim()" class="bg-indigo-600 text-white rounded-xl px-4 font-bold cursor-pointer hover:bg-indigo-700 shadow-md">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </transition>
-    </div>
-
-    <!-- VUE SCRIPT -->
     <script>
-        const globalStore = Vue.reactive({
-            showAITutor: false,
-            chatMessages: [],
-            chatInput: '',
-        });
+        const { createApp, ref, computed, reactive, nextTick } = Vue;
 
-        const app = Vue.createApp({
-            data() {
-                return {
-                    phase: 'home',
-                    mode2Unlocked: false,
-                    currentMode1Index: 0,
-                    mode1Checked: false,
-                    mode1Answers: {},
-                    mode2Answers: {},
-                    timer: 120, 
-                    timerInterval: null,
-                    wrongMode2Qs: [],
-                    retryIndex: 0,
-                    retryStatus: null,
+        createApp({
+            setup() {
+                const phase = ref('home');
+                const mode2Unlocked = ref(false);
+                
+                // Data Bank Soal Mode 1 (2024 KMSI Tipe A & B)
+                const mode1Questions = reactive([
+                    {
+                        id: 1,
+                        contextTitle: "New Zealand Tourism & Student Growth",
+                        contextBody: "New Zealand is becoming an increasingly popular destination for overseas visitors. It attracts tourists and people in business, but the vast majority come as students. Mostly from Asian countries, they stay for anything from a few weeks to few years or more, studying at language school, colleges and universities.\nNew Zealand can offer good homestay accommodation, a clean and beautiful environment and a reasonable cost of tuition. These factors attract an ever- increasing number of overseas students, accounting for millions of dollars in revenue for New Zealand.",
+                        prompt: "\"These factors\" in line 8 refers to...",
+                        options: [
+                            "Accommodation, environment, and reasonable tuition cost.",
+                            "Schools, colleges and universities",
+                            "Increasing overseas students",
+                            "Millions of dollars."
+                        ],
+                        answer: 0,
+                        rationale: "\"These factors\" merujuk langsung pada fasilitas dan keunggulan yang ditawarkan sebelumnya, yaitu akomodasi (accommodation), lingkungan bersih (environment), dan biaya kuliah yang wajar (reasonable tuition cost)."
+                    },
+                    {
+                        id: 2,
+                        contextTitle: "Data Siswa & Perbandingan (Table Analysis)",
+                        contextBody: "Name | Height | Weight | Age\nWulan | 153 cm | 49 kg | 17\nVicko | 168 cm | 65 kg | 18\nYessy | 161 cm | 58 kg | 17\nTika | 155 cm | 68 kg | 18",
+                        prompt: "Based on the table, which statement is correct?",
+                        options: [
+                            "Wulan is the youngest of all.",
+                            "Vicko is the lightest of all.",
+                            "Yessy is the tallest of all.",
+                            "Tika is the heaviest of all."
+                        ],
+                        answer: 3,
+                        rationale: "Mari analisis tabel: Tika memiliki berat badan 68 kg (paling berat di antara Wulan 49kg, Vicko 65kg, dan Yessy 58kg). Oleh karena itu, pernyataan 'Tika is the heaviest of all' adalah benar."
+                    }
+                ]);
 
-                    mode1Questions: [
-                        {
-                            id: 1, originalNumber: 1,
-                            context: "Walt Disney was born with the name Walter Elias Disney on December 5th, 1901 at Chicago's Hermosa Community Area. His father was Elias Charles Disney and his mother was Flora Call Disney. Walt Disney was Irish-Canadian descendant from his father and German-English descendant from his mother...",
-                            text: 'Walter Elias Disney was died in the age of ... years old.',
-                            options: ['22', '59', '64', '65'],
-                            correct: 3,
-                            theory: "Usia wafat dihitung dengan mengurangkan tahun kematian dengan tahun kelahiran (1966 - 1901 = 65 tahun)."
-                        },
-                        {
-                            id: 2, originalNumber: 2,
-                            context: "The following statements are true based on the text, except ...",
-                            text: 'The following statements are true based on the text, except ...',
-                            options: [
-                                'Walt Disney was a quarter Canadian.',
-                                'Walt Disney was half Canadian, half German.',
-                                'Charles Disney was half Irish, half Canadian.',
-                                'Walt Disney got his English descendant from his mother.'
-                            ],
-                            correct: 1,
-                            theory: "Di dalam teks disebutkan bahwa ia keturunan Irish-Canadian dari ayah dan German-English dari ibu, sehingga masing-masing seperempat (a quarter), bukan setengah."
-                        }
-                    ],
-                    mode2Questions: [
-                        {
-                            id: 3, originalNumber: 3,
-                            text: 'Walt Disney ________ numerous achievements before he ________ in 1966',
-                            options: ['Had had, died', 'Has had, dies', 'Had , died', 'Has , dies'],
-                            correct: 0,
-                            theory: "Kejadian pertama di masa lampau menggunakan Past Perfect (had had), diikuti kejadian berikutnya dengan Simple Past (died)."
-                        },
-                        {
-                            id: 4, originalNumber: 4,
-                            text: 'Oh my God! I ________ my keys. Could you help me searching for it?',
-                            options: ['Forget', 'Forgot', 'Is forgetting', 'Have forgetting'],
-                            correct: 1,
-                            theory: "Kejadian kehilangan kunci terjadi di waktu lampau yang dirasakan dampaknya saat ini, menggunakan Simple Past (Forgot)."
-                        }
-                    ]
+                // Data Bank Soal Mode 2 (2025 KMSI Tipe B & D)
+                const mode2Questions = reactive([
+                    {
+                        id: 3,
+                        contextTitle: "Walt Disney Biography Excerpt",
+                        contextBody: "Walt Disney was born with the name Walter Elias Disney on December 5th, 1901 at Chicago's Hermosa Community Area. His father was Elias Charles Disney and his mother was Flora Call Disney... Walt Disney died on December 15, 1966 in Burbank, California after long fight with lung cancer...",
+                        prompt: "Walter Elias Disney was died in the age of ... years old.",
+                        options: ["22", "59", "64", "65"],
+                        answer: 3,
+                        rationale: "Lahir 5 Desember 1901 dan wafat 15 Desember 1966. Hitungan usia: 1966 - 1901 = 65 tahun."
+                    },
+                    {
+                        id: 4,
+                        contextTitle: "Product Label Analysis (KEFLEX)",
+                        contextBody: "KEFLEX® CEPHALEXIN CAPSULES, USP 250 mg. Usual Adult Dose - One PULVULE every 6 hours. For more severe infections, dose may be increased, not to exceed 4 g a day. CAUTION - Federal (U.S.A.) law prohibits dispensing without prescription.",
+                        prompt: "Logo Rx found in the label means...",
+                        options: [
+                            "The drug is for adults only",
+                            "The drug should be stored under 30°C",
+                            "The drug should not be distributed out of USA",
+                            "The drug could only be dispensed under prescription"
+                        ],
+                        answer: 3,
+                        rationale: "Simbol 'Rx' (Prescription) pada kemasan obat medis menunjukkan bahwa obat tersebut hanya dapat diperoleh dan diberikan dengan resep dokter (dispensed under prescription)."
+                    }
+                ]);
+
+                // State Mode 1
+                const currentMode1Index = ref(0);
+                const answersMode1 = reactive({});
+                const mode1Checked = ref(false);
+                const currentMode1Q = computed(() => mode1Questions[currentMode1Index.value]);
+
+                // State Mode 2 & Timer
+                const answersMode2 = reactive({});
+                const timer = ref(120); // 2 Menit
+                const timerInterval = ref(null);
+                const score = ref(0);
+                const mode2Evaluation = reactive([]);
+                const wrongMode2Qs = reactive([]);
+
+                // State Retry
+                const retryIndex = ref(0);
+                const selectedRetryOpt = ref(null);
+                const retryStatus = ref(null);
+                const retryQ = computed(() => wrongMode2Qs[retryIndex.value] || {});
+
+                // State AI Tutor Chat
+                const showAITutor = ref(false);
+                const chatInput = ref('');
+                const chatMessages = reactive([
+                    { role: 'model', text: 'Halo, Calon Juara! Saya AI Tutor Olimpiade Anda. Ada bagian materi atau soal yang ingin didiskusikan?' }
+                ]);
+
+                const formattedTimer = computed(() => {
+                    const mins = Math.floor(timer.value / 60);
+                    const secs = timer.value % 60;
+                    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                });
+
+                // Navigasi & Logika
+                const startMode1 = () => { phase.value = 'mode1'; };
+
+                const checkMode1 = () => { mode1Checked.value = true; };
+
+                const nextMode1 = () => {
+                    if (currentMode1Index.value < mode1Questions.length - 1) {
+                        currentMode1Index.value++;
+                        mode1Checked.value = false;
+                    } else {
+                        // Selesai Mode 1 -> Buka Mode 2
+                        mode2Unlocked.value = true;
+                        phase.value = 'home';
+                    }
                 };
-            },
-            computed: {
-                currentQ() { return this.mode1Questions[this.currentMode1Index]; },
-                formattedTimer() {
-                    let m = Math.floor(this.timer / 60).toString().padStart(2, '0');
-                    let s = (this.timer % 60).toString().padStart(2, '0');
-                    return `${m}:${s}`;
-                },
-                retryQ() { return this.wrongMode2Qs[this.retryIndex]; }
-            },
-            methods: {
-                startMode1() {
-                    this.phase = 'mode1';
-                    this.currentMode1Index = 0;
-                    this.mode1Checked = false;
-                    this.mode1Answers = {};
-                },
-                checkMode1() { this.mode1Checked = true; },
-                nextMode1() {
-                    if (this.currentMode1Index < this.mode1Questions.length - 1) {
-                        this.currentMode1Index++;
-                        this.mode1Checked = false;
-                    } else {
-                        this.mode2Unlocked = true;
-                        this.phase = 'home';
-                    }
-                },
-                startMode2Intro() { this.phase = 'mode2_intro'; },
-                startMode2() {
-                    this.phase = 'mode2';
-                    this.timer = 120;
-                    this.mode2Answers = {};
-                    this.timerInterval = setInterval(() => {
-                        if (this.timer > 0) this.timer--;
-                        else this.submitMode2();
+
+                const startMode2Intro = () => { phase.value = 'mode2_intro'; };
+
+                const startMode2 = () => {
+                    phase.value = 'mode2';
+                    timer.value = 120;
+                    clearInterval(timerInterval.value);
+                    timerInterval.value = setInterval(() => {
+                        if (timer.value > 0) {
+                            timer.value--;
+                        } else {
+                            clearInterval(timerInterval.value);
+                            submitMode2();
+                        }
                     }, 1000);
-                },
-                submitMode2() {
-                    clearInterval(this.timerInterval);
-                    this.wrongMode2Qs = this.mode2Questions.filter(q => this.mode2Answers[q.id] !== q.correct);
-                    if (this.wrongMode2Qs.length > 0) {
-                        this.phase = 'eval';
-                    } else {
-                        this.phase = 'finish';
-                    }
-                },
-                startRetry() {
-                    this.phase = 'retry';
-                    this.retryIndex = 0;
-                    this.retryStatus = null;
-                },
-                checkRetryAnswer(idx) {
-                    if (this.retryStatus && this.retryStatus.isCorrect) return;
-                    let isCorr = (idx === this.retryQ.correct);
-                    this.retryStatus = { selected: idx, isCorrect: isCorr };
-                },
-                nextRetry() {
-                    if (this.retryIndex < this.wrongMode2Qs.length - 1) {
-                        this.retryIndex++;
-                        this.retryStatus = null;
-                    } else {
-                        this.phase = 'finish';
-                    }
-                },
-                resetApp() {
-                    this.phase = 'home';
-                    this.currentMode1Index = 0;
-                    this.mode1Checked = false;
-                    this.mode1Answers = {};
-                    this.mode2Answers = {};
-                    this.wrongMode2Qs = [];
-                    this.retryStatus = null;
-                    clearInterval(this.timerInterval);
-                },
-                openAITutor() {
-                    globalStore.showAITutor = true;
-                    if (globalStore.chatMessages.length === 0) {
-                        globalStore.chatMessages = [{ role: 'model', text: "Halo! Saya AI Tutor olimpiade Anda. Ada bagian soal yang ingin didiskusikan?" }];
-                    }
-                }
-            }
-        });
+                };
 
-        const modalApp = Vue.createApp({
-            data() { return globalStore; },
-            methods: {
-                closeAITutor() { this.showAITutor = false; },
-                formatMessage(text) { return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); },
-                sendMessage() {
-                    if (!this.chatInput.trim()) return;
-                    const msg = this.chatInput.trim();
-                    this.chatMessages.push({ role: 'user', text: msg });
-                    this.chatInput = '';
+                const submitMode2 = () => {
+                    clearInterval(timerInterval.value);
+                    let correctCount = 0;
+                    mode2Evaluation.splice(0, mode2Evaluation.length);
+                    wrongMode2Qs.splice(0, wrongMode2Qs.length);
+
+                    mode2Questions.forEach((q, idx) => {
+                        const userAns = answersMode2[idx];
+                        const isCorrect = userAns === q.answer;
+                        if (isCorrect) correctCount++;
+                        else wrongMode2Qs.push(q);
+
+                        mode2Evaluation.push({
+                            prompt: q.prompt,
+                            isCorrect: isCorrect,
+                            rationale: q.rationale
+                        });
+                    });
+
+                    score.value = Math.round((correctCount / mode2Questions.length) * 100);
+                    phase.value = 'evaluation';
+                };
+
+                const proceedToRetry = () => {
+                    if (wrongMode2Qs.length > 0) {
+                        retryIndex.value = 0;
+                        selectedRetryOpt.value = null;
+                        retryStatus.value = null;
+                        phase.value = 'retry';
+                    } else {
+                        phase.value = 'home';
+                    }
+                };
+
+                const submitRetry = () => {
+                    if (selectedRetryOpt.value === retryQ.value.answer) {
+                        retryStatus.value = 'correct';
+                    } else {
+                        retryStatus.value = 'wrong';
+                    }
+                };
+
+                const nextRetry = () => {
+                    if (retryIndex.value < wrongMode2Qs.length - 1) {
+                        retryIndex.value++;
+                        selectedRetryOpt.value = null;
+                        retryStatus.value = null;
+                    } else {
+                        phase.value = 'home';
+                    }
+                };
+
+                const resetApp = () => {
+                    phase.value = 'home';
+                    currentMode1Index.value = 0;
+                    mode1Checked.value = false;
+                    Object.keys(answersMode1).forEach(k => delete answersMode1[k]);
+                    Object.keys(answersMode2).forEach(k => delete answersMode2[k]);
+                    clearInterval(timerInterval.value);
+                };
+
+                const openAITutor = () => { showAITutor.value = true; };
+
+                const sendChatMessage = () => {
+                    if (!chatInput.value.trim()) return;
+                    const txt = chatInput.value.trim();
+                    chatMessages.push({ role: 'user', text: txt });
+                    chatInput.value = '';
+
                     setTimeout(() => {
-                        this.chatMessages.push({ role: 'model', text: "Perhatikan kembali teks bacaan atau aturan struktur kalimatnya dengan teliti ya!" });
-                    }, 800);
-                }
-            }
-        });
+                        let reply = "Analisis dengan cermat petunjuk pada soal. Perhatikan kata kunci (keywords) seperti waktu kejadian atau rujukan subjek pada teks.";
+                        if (txt.toLowerCase().includes('disney')) {
+                            reply = "Untuk soal biografi Walt Disney, hitung selisih tahun wafat dan tahun lahir untuk menemukan usia tepatnya.";
+                        } else if (txt.toLowerCase().includes('keflex') || txt.toLowerCase().includes('rx')) {
+                            reply = "Simbol Rx berasal dari bahasa Latin 'Recipe' yang berarti 'ambilah', yang secara universal digunakan sebagai penanda resep dokter.";
+                        }
+                        chatMessages.push({ role: 'model', text: reply });
+                    }, 600);
+                };
 
-        app.mount('#app');
-        modalApp.mount('#ai-modal-root');
+                return {
+                    phase, mode2Unlocked, mode1Questions, currentMode1Index, currentMode1Q,
+                    answersMode1, mode1Checked, startMode1, checkMode1, nextMode1,
+                    startMode2Intro, startMode2, mode2Questions, answersMode2, formattedTimer,
+                    submitMode2, score, mode2Evaluation, proceedToRetry,
+                    wrongMode2Qs, retryIndex, selectedRetryOpt, retryStatus, retryQ,
+                    submitRetry, nextRetry, resetApp, showAITutor, openAITutor,
+                    chatInput, chatMessages, sendChatMessage
+                };
+            }
+        }).mount('#app');
     </script>
 </body>
 </html>
